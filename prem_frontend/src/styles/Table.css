@@ -1,0 +1,80 @@
+.table-container {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+}
+
+.player-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.player-table thead {
+    background: linear-gradient(135deg, #2c7a7b 0%, #38b2ac 100%);
+    color: white;
+}
+
+.player-table th {
+    padding: 18px 15px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+.player-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: var(--transition);
+}
+
+.player-table tbody tr:hover {
+    background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%);
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.player-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.player-table td {
+    padding: 16px 15px;
+    color: var(--text-dark);
+}
+
+.player-name {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.stat-highlight {
+    font-weight: 700;
+    color: #e53e3e;
+}
+
+@media (max-width: 1024px) {
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .player-table {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .player-table th,
+    .player-table td {
+        padding: 12px 10px;
+        font-size: 0.85rem;
+    }
+
+    .player-table th {
+        font-size: 0.75rem;
+    }
+}
