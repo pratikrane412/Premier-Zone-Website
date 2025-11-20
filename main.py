@@ -8,7 +8,7 @@ app = FastAPI()
 # Main page
 @app.get("/")
 def greet():
-    return "Welcome to Premier Data Hub"
+    return "Welcome to Premier Zone Website"
 
 # Getting the database
 def get_db():
