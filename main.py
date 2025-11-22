@@ -19,11 +19,11 @@ def get_db():
         db.close()
         
         
-# All players data
+# All players data with pagination
 @app.get("/players")
-def get_all_players(db: Session = Depends(get_db)):
+def get_all_players(limit: int = 50, offset: int = 0, db: Session = Depends(get_db)):
     
-    players = db.query(database_models.Player).all()
+    players = db.query(database_models.Player).limit(limit).offset(offset).all()
     return players
 
 # All teams
