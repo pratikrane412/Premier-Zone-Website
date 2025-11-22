@@ -55,3 +55,31 @@ def get_all_positions(db: Session = Depends(get_db)):
             unique_positions.add(each.strip())
 
     return sorted(unique_positions)
+
+# Search players with players names
+@app.get("/players/search")
+def search_players(player_name: str, db: Session = Depends(get_db)):
+    
+    players = db.query(database_models.Player).filter(database_models.Player.player_name.ilike(f"%{player_name}%")).all()
+    return players
+
+# Search players with team names
+@app.get("/teams/search")
+def search_teams(team_name: str, db: Session = Depends(get_db)):
+    
+    teams = db.query(database_models.Player).filter(database_models.Player.team_name.ilike(f"%{team_name}%")).all()
+    return teams
+
+# Search players by nation names
+@app.get("/nations/search")
+def search_nations(nation: str, db: Session = Depends(get_db)):
+    
+    nations = db.query(database_models.Player).filter(database_models.Player.nation.ilike(f"%{nation}%")).all()
+    return nations
+
+# Search players by position names
+@app.get("/players/position/{position}")
+def get_players_by_position(position: str, db: Session = Depends(get_db)):
+    
+    players = db.query(database_models.Player).filter(database_models.Player.position.ilike(f"%%{position}")).all()
+    return players
