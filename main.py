@@ -3,7 +3,7 @@ from database import session
 import database_models
 from sqlalchemy.orm import Session
 
-app = FastAPI()
+app = FastAPI(title="Premier Zone API")
 
 # Main page
 @app.get("/")
