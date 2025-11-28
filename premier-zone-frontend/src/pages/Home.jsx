@@ -1,5 +1,5 @@
 import "../styles/home.css";
-import logo from "../assets/logo.png"; // Replace with your desired logo
+import logo from "../assets/logo.png"; 
 
 export default function Home() {
     return (
