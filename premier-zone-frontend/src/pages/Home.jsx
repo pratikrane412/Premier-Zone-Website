@@ -1,27 +1,30 @@
-import "../styles/home.css";
+import "../styles/Home.css";
 import logo from "../assets/logo.png"; 
 
 export default function Home() {
     return (
         <section className="hero-section">
-
             <div className="hero-container">
-
                 <div className="hero-left">
-                    <h1 className="hero-title">Welcome to Premier Zone!</h1>
+                    <div className="badge">Season 2024/25 Statistics</div>
+                    <h1 className="hero-title">
+                        Master the <span className="highlight">Pitch</span> with Real-Time Stats
+                    </h1>
                     <p className="hero-subtitle">
-                        Your home for everything Premier League — stats, players, clubs and more.
+                        Deep dive into Premier League player performance, team dynamics, and national contributions. 
                     </p>
-
-                    <button className="hero-btn">Get Started</button>
+                    <div className="hero-actions">
+                        <button className="hero-btn primary">Explore Players</button>
+                        <button className="hero-btn secondary">View Teams</button>
+                    </div>
                 </div>
 
                 <div className="hero-right">
-                    <img className="hero-logo" src={logo} alt="Premier League Logo" />
+                    <div className="logo-glow-container">
+                        <img className="hero-logo" src={logo} alt="Premier League Logo" />
+                    </div>
                 </div>
-
             </div>
-
         </section>
     );
 }
