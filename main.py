@@ -1,9 +1,23 @@
 from fastapi import FastAPI, Depends
 from database import session
+from fastapi.middleware.cors import CORSMiddleware
 import database_models
 from sqlalchemy.orm import Session
 
 app = FastAPI(title="Premier Zone API")
+
+origins = [
+    "http://localhost:5173",    # Your Vite/React local dev URL
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,            # Allows requests from your frontend
+    allow_credentials=True,
+    allow_methods=["*"],              # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],              # Allows all headers
+)
 
 # Main page
 @app.get("/")
@@ -66,9 +80,11 @@ def search_players(player_name: str, db: Session = Depends(get_db)):
 # Search players with team names
 @app.get("/teams/search")
 def search_teams(team_name: str, db: Session = Depends(get_db)):
-    
-    teams = db.query(database_models.Player).filter(database_models.Player.team_name.ilike(f"%{team_name}%")).all()
-    return teams
+    players = db.query(database_models.Player)\
+        .filter(database_models.Player.team_name.ilike(f"%{team_name}%"))\
+        .order_by(database_models.Player.matches_played.desc())\
+        .all()
+    return players
 
 # Search players by nation names
 @app.get("/nations/search")

@@ -15,7 +15,7 @@ export default function Home() {
                     </p>
                     <div className="hero-actions">
                         <button className="hero-btn primary">Explore Players</button>
-                        <button className="hero-btn secondary">View Teams</button>
+                        <a href="/teams"><button className="hero-btn secondary">View Teams</button></a>
                     </div>
                 </div>
 
