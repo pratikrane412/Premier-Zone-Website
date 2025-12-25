@@ -95,7 +95,12 @@ def search_nations(nation: str, db: Session = Depends(get_db)):
 
 # Search players by position names
 @app.get("/players/position/{position}")
-def get_players_by_position(position: str, db: Session = Depends(get_db)):
+def get_players_by_position(position: str, limit: int = 50, offset: int = 0, db: Session = Depends(get_db)):
     
-    players = db.query(database_models.Player).filter(database_models.Player.position.ilike(f"%{position}%")).all()
+    players = db.query(database_models.Player)\
+        .filter(database_models.Player.position.ilike(f"%{position}%"))\
+        .limit(limit)\
+        .offset(offset)\
+        .all()
+        
     return players
