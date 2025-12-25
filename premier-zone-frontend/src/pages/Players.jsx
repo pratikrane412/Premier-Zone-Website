@@ -1,91 +1,130 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useLocation, Link } from 'react-router-dom';
-import '../styles/Players.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
+import "../styles/players.css";
 
 export default function Players() {
-    const [players, setPlayers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    
-    
-    const location = useLocation();
-    const query = new URLSearchParams(location.search);
-    const teamName = query.get('team');
+  const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchSquad = async () => {
-            try {
-                setLoading(true);
-                
-                const url = teamName 
-                    ? `http://127.0.0.1:8000/teams/search?team_name=${teamName}`
-                    : `http://127.0.0.1:8000/players?limit=100`;
+  // Pagination State
+  const [page, setPage] = useState(1);
+  const limit = 50;
 
-                const res = await axios.get(url);
-                setPlayers(res.data);
-            } catch (err) {
-                console.error("Error fetching squad:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const teamFilter = query.get("team");
+  const posFilter = query.get("position");
 
-        fetchSquad();
-    }, [teamName]);
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        setLoading(true);
+        const offset = (page - 1) * limit;
 
-    if (loading) return <div className="loader">Gathering Squad Data...</div>;
+        let url = `http://127.0.0.1:8000/players?limit=${limit}&offset=${offset}`;
 
-    return (
-        <div className="players-page">
-            <header className="players-header">
-                <Link to="/teams" className="back-btn">← Back to Clubs</Link>
-                <div className="header-content">
-                    {/* Displaying the team logo again for brand consistency */}
-                    {teamName && <img src={`/teams/${teamName}.png`} alt="logo" className="header-logo" />}
-                    <div>
-                        <h1 className="hero-title">
-                            {teamName ? teamName.replace(/-/g, ' ') : "All Players"}
-                        </h1>
-                        <p className="hero-subtitle">Squad Statistics • Season 2024/25</p>
-                    </div>
-                </div>
-            </header>
+        if (teamFilter) {
+          // Teams usually have < 30 players, so pagination isn't strictly needed here
+          url = `http://127.0.0.1:8000/teams/search?team_name=${teamFilter}`;
+        } else if (posFilter) {
+          // ADD THE QUERY PARAMS HERE TOO
+          url = `http://127.0.0.1:8000/players/position/${posFilter}?limit=${limit}&offset=${offset}`;
+        }
 
-            <div className="stats-container">
-                <table className="modern-table">
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>Nation</th>
-                            <th>Pos</th>
-                            <th>Age</th>
-                            <th>MP</th>
-                            <th className="highlight-th">Gls</th>
-                            <th className="highlight-th">Ast</th>
-                            <th>xG</th>
-                            <th>xAG</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {players.map((p, index) => (
-                            <tr key={index}>
-                                <td className="player-name-cell">{p.player_name}</td>
-                                <td className="nation-cell">
-                                    {/* Splits "br BRA" into "BRA" */}
-                                    <span className="flag-text">{p.nation?.split(' ')[1]}</span>
-                                </td>
-                                <td><span className="pos-badge">{p.position}</span></td>
-                                <td>{p.age}</td>
-                                <td>{p.matches_played}</td>
-                                <td className="stat-important">{p.goals}</td>
-                                <td className="stat-important">{p.assists}</td>
-                                <td className="stat-muted">{p.expected_goals}</td>
-                                <td className="stat-muted">{p.expected_assists}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+        const res = await axios.get(url);
+        setPlayers(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlayers();
+  }, [teamFilter, posFilter, page]);
+
+  // Reset to page 1 if user changes filters
+  useEffect(() => {
+    setPage(1);
+  }, [teamFilter, posFilter]);
+
+  if (loading) return <div className="loader">Updating Pitch Stats...</div>;
+
+  return (
+    <div className="players-page">
+      <header className="players-header">
+        <h1 className="hero-title">
+          {teamFilter
+            ? teamFilter.replace(/-/g, " ")
+            : posFilter
+            ? `${posFilter}s`
+            : "Premier League"}
+          <span className="highlight"> Players</span>
+        </h1>
+        <p className="hero-subtitle">
+          Page {page} • Displaying {players.length} results
+        </p>
+      </header>
+
+      <div className="stats-container">
+        <table className="modern-table">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Team</th>
+              <th>Nation</th>
+              <th>Pos</th>
+              <th className="highlight-th">Gls</th>
+              <th className="highlight-th">Ast</th>
+              <th>MP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {players.map((p, index) => (
+              <tr key={index}>
+                <td className="player-name-cell">{p.player_name}</td>
+                <td>{p.team_name}</td>
+                <td>{p.nation?.split(" ")[1]}</td>
+                <td>
+                  <span className="pos-badge">{p.position}</span>
+                </td>
+                <td className="stat-important">{p.goals ?? 0}</td>
+                <td className="stat-important">{p.assists ?? 0}</td>
+                <td>{p.matches_played ?? 0}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Controls - Show for 'All Players' OR 'Positions' view */}
+      {!teamFilter && (
+        <div className="pagination">
+          <button
+            disabled={page === 1}
+            onClick={() => {
+              setPage((prev) => prev - 1);
+              window.scrollTo(0, 0);
+            }}
+            className="pager-btn"
+          >
+            ← Previous
+          </button>
+
+          <span className="page-number">Page {page}</span>
+
+          <button
+            disabled={players.length < limit}
+            onClick={() => {
+              setPage((prev) => prev + 1);
+              window.scrollTo(0, 0);
+            }}
+            className="pager-btn"
+          >
+            Next →
+          </button>
         </div>
-    );
+      )}
+    </div>
+  );
 }
