@@ -88,10 +88,15 @@ def search_teams(team_name: str, db: Session = Depends(get_db)):
 
 # Search players by nation names
 @app.get("/nations/search")
-def search_nations(nation: str, db: Session = Depends(get_db)):
+def search_nations(nation: str, limit: int = 50, offset: int = 0, db: Session = Depends(get_db)):
     
-    nations = db.query(database_models.Player).filter(database_models.Player.nation.ilike(f"%{nation}%")).all()
-    return nations
+    players = db.query(database_models.Player)\
+        .filter(database_models.Player.nation.ilike(f"%{nation}%"))\
+        .limit(limit)\
+        .offset(offset)\
+        .all()
+        
+    return players
 
 # Search players by position names
 @app.get("/players/position/{position}")

@@ -15,6 +15,7 @@ export default function Players() {
   const query = new URLSearchParams(location.search);
   const teamFilter = query.get("team");
   const posFilter = query.get("position");
+  const nationFilter = query.get("nation"); // 1. Added Nation filter extraction
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -25,11 +26,12 @@ export default function Players() {
         let url = `http://127.0.0.1:8000/players?limit=${limit}&offset=${offset}`;
 
         if (teamFilter) {
-          // Teams usually have < 30 players, so pagination isn't strictly needed here
           url = `http://127.0.0.1:8000/teams/search?team_name=${teamFilter}`;
         } else if (posFilter) {
-          // ADD THE QUERY PARAMS HERE TOO
           url = `http://127.0.0.1:8000/players/position/${posFilter}?limit=${limit}&offset=${offset}`;
+        } else if (nationFilter) {
+          // FIX: Added limit and offset here to stop the lag
+          url = `http://127.0.0.1:8000/nations/search?nation=${nationFilter}&limit=${limit}&offset=${offset}`;
         }
 
         const res = await axios.get(url);
@@ -41,12 +43,12 @@ export default function Players() {
       }
     };
     fetchPlayers();
-  }, [teamFilter, posFilter, page]);
+  }, [teamFilter, posFilter, nationFilter, page]);
 
-  // Reset to page 1 if user changes filters
+  // Reset to page 1 if user changes any filters
   useEffect(() => {
     setPage(1);
-  }, [teamFilter, posFilter]);
+  }, [teamFilter, posFilter, nationFilter]); // 4. Reset on nation change
 
   if (loading) return <div className="loader">Updating Pitch Stats...</div>;
 
@@ -54,10 +56,13 @@ export default function Players() {
     <div className="players-page">
       <header className="players-header">
         <h1 className="hero-title">
+          {/* 5. Dynamic Title Update */}
           {teamFilter
             ? teamFilter.replace(/-/g, " ")
             : posFilter
             ? `${posFilter}s`
+            : nationFilter
+            ? `Players from ${nationFilter}`
             : "Premier League"}
           <span className="highlight"> Players</span>
         </h1>
@@ -80,24 +85,35 @@ export default function Players() {
             </tr>
           </thead>
           <tbody>
-            {players.map((p, index) => (
-              <tr key={index}>
-                <td className="player-name-cell">{p.player_name}</td>
-                <td>{p.team_name}</td>
-                <td>{p.nation?.split(" ")[1]}</td>
-                <td>
-                  <span className="pos-badge">{p.position}</span>
+            {players.length > 0 ? (
+              players.map((p, index) => (
+                <tr key={index}>
+                  <td className="player-name-cell">{p.player_name}</td>
+                  <td>{p.team_name}</td>
+                  <td>{p.nation?.split(" ")[1]}</td>
+                  <td>
+                    <span className="pos-badge">{p.position}</span>
+                  </td>
+                  <td className="stat-important">{p.goals ?? 0}</td>
+                  <td className="stat-important">{p.assists ?? 0}</td>
+                  <td>{p.matches_played ?? 0}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="7"
+                  style={{ textAlign: "center", padding: "30px" }}
+                >
+                  No players found.
                 </td>
-                <td className="stat-important">{p.goals ?? 0}</td>
-                <td className="stat-important">{p.assists ?? 0}</td>
-                <td>{p.matches_played ?? 0}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination Controls - Show for 'All Players' OR 'Positions' view */}
+      {/* Pagination Controls - Hide for Team and Nation views (usually smaller lists) */}
       {!teamFilter && (
         <div className="pagination">
           <button
