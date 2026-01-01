@@ -1,0 +1,1 @@
+web: gunicorn premier_zone_backend.wsgi
