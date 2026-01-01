@@ -9,7 +9,7 @@ export default function Nations() {
 
   useEffect(() => {
     axios
-      .get("https://premier-backend.onrender.com/nations")
+      .get("[YOUR_BACKEND_URL]/nations")
       .then((res) => {
         const sortedNations = res.data.sort((a, b) =>
           a.split(" ")[1].localeCompare(b.split(" ")[1])

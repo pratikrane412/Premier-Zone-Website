@@ -10,7 +10,7 @@ export default function Teams() {
   useEffect(() => {
     // Fetching from your FastAPI endpoint
     axios
-      .get("https://premier-backend.onrender.com/teams")
+      .get("[YOUR_BACKEND_URL]/teams")
       .then((res) => {
         setTeams(res.data);
         setLoading(false);

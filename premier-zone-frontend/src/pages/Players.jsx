@@ -23,15 +23,15 @@ export default function Players() {
         setLoading(true);
         const offset = (page - 1) * limit;
 
-        let url = `https://premier-backend.onrender.com/players?limit=${limit}&offset=${offset}`;
+        let url = `[YOUR_BACKEND_URL]/players?limit=${limit}&offset=${offset}`;
 
         if (teamFilter) {
-          url = `https://premier-backend.onrender.com/teams/search?team_name=${teamFilter}`;
+          url = `[YOUR_BACKEND_URL]/teams/search?team_name=${teamFilter}`;
         } else if (posFilter) {
-          url = `https://premier-backend.onrender.com/players/position/${posFilter}?limit=${limit}&offset=${offset}`;
+          url = `[YOUR_BACKEND_URL]/players/position/${posFilter}?limit=${limit}&offset=${offset}`;
         } else if (nationFilter) {
           // FIX: Added limit and offset here to stop the lag
-          url = `https://premier-backend.onrender.com/nations/search?nation=${nationFilter}&limit=${limit}&offset=${offset}`;
+          url = `[YOUR_BACKEND_URL]/nations/search?nation=${nationFilter}&limit=${limit}&offset=${offset}`;
         }
 
         const res = await axios.get(url);

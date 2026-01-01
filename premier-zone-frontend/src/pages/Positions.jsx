@@ -15,7 +15,7 @@ export default function Positions() {
     };
 
     useEffect(() => {
-        axios.get("https://premier-backend.onrender.com/positions")
+        axios.get("[YOUR_BACKEND_URL]/positions")
             .then(res => {
                 setPositions(res.data);
                 setLoading(false);
